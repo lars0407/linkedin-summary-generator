@@ -15,18 +15,9 @@ export async function POST(req: Request) {
     },
     body: JSON.stringify({
       model,
-      messages: [
-        { 
-          role: "system", 
-          content: "You are a professional LinkedIn summary writer. Your task is to generate EXACTLY THREE distinct summaries. Format your response like this:\n\n1. [First Summary]\n\n2. [Second Summary]\n\n3. [Third Summary]\n\nMake sure to use the exact numbering format '1. ', '2. ', '3. ' at the beginning of each summary. Include a line break between each summary. Each summary should be coherent, professional, and less than 300 characters. DO NOT include any text before the first summary or after the third summary."
-        },
-        { 
-          role: "user", 
-          content: prompt 
-        }
-      ],
+      messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
-      max_tokens: 800,
+      max_tokens: 500,
       stream: true,
     }),
   });

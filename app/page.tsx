@@ -13,7 +13,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [bio, setBio] = useState("");
   const [vibe, setVibe] = useState<VibeType>("Professional");
-  const [generatedBios, setGeneratedBios] = useState<string>("");
+  const [generatedBios, setGeneratedBios] = useState<String>("");
   const [isGPT4, setIsGPT4] = useState(false);
 
   const bioRef = useRef<null | HTMLDivElement>(null);
@@ -141,7 +141,7 @@ export default function Home() {
         />
         <hr className="h-px bg-gray-700 border-1 dark:bg-gray-700" />
         <div className="space-y-10 my-10">
-          {generatedBios && generatedBios.length > 0 ? (
+          {generatedBios && (
             <>
               <div>
                 <h2
@@ -152,114 +152,27 @@ export default function Home() {
                 </h2>
               </div>
               <div className="space-y-8 flex flex-col items-center justify-center max-w-xl mx-auto">
-                {(() => {
-                  try {
-                    // First, try to find the labeled summaries
-                    let summaries: string[] = [];
-                    
-                    // Use a regex pattern that better captures the numbered summaries
-                    // This regex looks for a number followed by a period, then captures everything
-                    // until the next number or the end of the string
-                    const regex = /(\d+\.\s*)([\s\S]*?)(?=\d+\.\s*|$)/g;
-                    
-                    let match;
-                    let matchCount = 0;
-                    let processedText = generatedBios;
-                    
-                    console.log("Processing generated text:", processedText);
-                    
-                    // First pass: Try to find numbered summaries with the regex
-                    while ((match = regex.exec(processedText)) !== null) {
-                      const summaryText = match[2].trim();
-                      if (summaryText) {
-                        summaries.push(summaryText);
-                        matchCount++;
-                      }
-                    }
-                    
-                    console.log(`Found ${matchCount} summaries with regex`);
-                    
-                    // If we don't find exactly 3 summaries, try a simpler approach
-                    if (summaries.length !== 3) {
-                      summaries = []; // Reset
-                      
-                      // Try splitting by "1.", "2.", "3." markers
-                      const parts = processedText.split(/\d+\.\s*/);
-                      
-                      // The first part is usually empty or contains intro text
-                      for (let i = 1; i < parts.length; i++) {
-                        const part = parts[i].trim();
-                        if (part) {
-                          summaries.push(part);
-                        }
-                      }
-                      
-                      console.log(`Found ${summaries.length} summaries with split approach`);
-                    }
-                    
-                    // If we still don't have exactly 3 summaries, try to split by newlines
-                    if (summaries.length !== 3 && processedText.includes('\n\n')) {
-                      summaries = processedText.split('\n\n')
-                        .filter(summary => summary.trim().length > 0)
-                        .slice(0, 3); // Limit to 3 summaries
-                      
-                      console.log(`Found ${summaries.length} summaries with newline split`);
-                    }
-                    
-                    // If we couldn't find any properly formatted summaries, just display the whole text
-                    if (summaries.length === 0) {
-                      return (
-                        <div
-                          className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
-                          onClick={() => {
-                            navigator.clipboard.writeText(processedText);
-                            toast("Summary copied to clipboard", {
-                              icon: "✂️",
-                            });
-                          }}
-                        >
-                          <p>{processedText}</p>
-                        </div>
-                      );
-                    }
-                    
-                    // Otherwise, display each summary separately (up to 3)
-                    return summaries.slice(0, 3).map((summary, i) => (
+                {generatedBios
+                  .substring(generatedBios.indexOf("1") + 3)
+                  .split(/2\.|3\./)
+                  .map((generatedBio, i) => {
+                    return (
                       <div
                         className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
                         onClick={() => {
-                          navigator.clipboard.writeText(summary);
+                          navigator.clipboard.writeText(generatedBio);
                           toast("Summary copied to clipboard", {
                             icon: "✂️",
                           });
                         }}
                         key={i}
                       >
-                        <p>{summary}</p>
-                      </div>
-                    ));
-                  } catch (error) {
-                    console.error("Error parsing summaries:", error);
-                    // Fallback if there's an error in parsing
-                    return (
-                      <div
-                        className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
-                        onClick={() => {
-                          navigator.clipboard.writeText(generatedBios);
-                          toast("Summary copied to clipboard", {
-                            icon: "✂️",
-                          });
-                        }}
-                      >
-                        <p>{generatedBios}</p>
+                        <p>{generatedBio}</p>
                       </div>
                     );
-                  }
-                })()}
+                  })}
               </div>
             </>
-          ) : (
-            <div className="text-gray-500">No summaries generated yet</div>
           )}
         </div>
       </main>
