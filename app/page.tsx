@@ -26,21 +26,11 @@ export default function Home() {
 
   const prompt = `Generate 3 ${
     vibe === "Casual" ? "relaxed" : vibe === "Funny" ? "silly" : "Professional"
-  } LinkedIn summaries. Each summary should be less than 300 characters, professional for LinkedIn${
-    vibe === "Funny" ? ", with a touch of humor" : ""
-  }. Use this context: ${bio}${bio.slice(-1) === "." ? "" : "."} 
-Format each summary EXACTLY as follows:
-[START_SUMMARY_1]
-First summary
-[END_SUMMARY_1]
-
-[START_SUMMARY_2]
-Second summary
-[END_SUMMARY_2]
-
-[START_SUMMARY_3]
-Third summary
-[END_SUMMARY_3]`;
+  } LinkedIn summaries with no hashtags and clearly labeled "1.", "2.", and "3.". Only return these 3 LinkedIn summaries, nothing else. ${
+    vibe === "Funny" ? "Make the summaries humerous" : ""
+  }Make sure each generated summary is less than 300 characters, has short sentences that are professional for LinkedIn, and feel free to use this context as well: ${bio}${
+    bio.slice(-1) === "." ? "" : "."
+  }`;
 
   const generateBio = async (e: any) => {
     e.preventDefault();
@@ -164,53 +154,71 @@ Third summary
               <div className="space-y-8 flex flex-col items-center justify-center max-w-xl mx-auto">
                 {(() => {
                   try {
-                    // Log raw text for debugging
-                    console.log("Raw text received:", generatedBios);
+                    // First, try to find the labeled summaries
+                    let summaries: string[] = [];
                     
-                    // Extract summaries using the new format with regex
-                    const summaryRegex = /\[START_SUMMARY_\d+\]([\s\S]*?)\[END_SUMMARY_\d+\]/g;
-                    const summaries: string[] = [];
+                    // Use a regex pattern that better captures the numbered summaries
+                    // This regex looks for a number followed by a period, then captures everything
+                    // until the next number or the end of the string
+                    const regex = /(\d+\.\s*)([\s\S]*?)(?=\d+\.\s*|$)/g;
                     
                     let match;
-                    while ((match = summaryRegex.exec(generatedBios)) !== null) {
-                      const summaryText = match[1].trim();
+                    let matchCount = 0;
+                    let processedText = generatedBios;
+                    
+                    console.log("Processing generated text:", processedText);
+                    
+                    // First pass: Try to find numbered summaries with the regex
+                    while ((match = regex.exec(processedText)) !== null) {
+                      const summaryText = match[2].trim();
                       if (summaryText) {
                         summaries.push(summaryText);
+                        matchCount++;
                       }
                     }
                     
-                    console.log("Extracted summaries:", summaries);
+                    console.log(`Found ${matchCount} summaries with regex`);
                     
-                    // If we couldn't find any properly formatted summaries, try a more lenient approach
-                    if (summaries.length === 0) {
-                      console.log("No summaries found with strict regex, trying backup method");
+                    // If we don't find exactly 3 summaries, try a simpler approach
+                    if (summaries.length !== 3) {
+                      summaries = []; // Reset
                       
-                      // Try looking for just the text between any START and END markers
-                      const backupRegex = /\[START[^\]]*\]([\s\S]*?)\[END[^\]]*\]/g;
+                      // Try splitting by "1.", "2.", "3." markers
+                      const parts = processedText.split(/\d+\.\s*/);
                       
-                      while ((match = backupRegex.exec(generatedBios)) !== null) {
-                        const summaryText = match[1].trim();
-                        if (summaryText) {
-                          summaries.push(summaryText);
+                      // The first part is usually empty or contains intro text
+                      for (let i = 1; i < parts.length; i++) {
+                        const part = parts[i].trim();
+                        if (part) {
+                          summaries.push(part);
                         }
                       }
                       
-                      console.log("Backup extraction found:", summaries.length, "summaries");
+                      console.log(`Found ${summaries.length} summaries with split approach`);
                     }
                     
-                    // If we still couldn't find any summaries, just display the whole text
+                    // If we still don't have exactly 3 summaries, try to split by newlines
+                    if (summaries.length !== 3 && processedText.includes('\n\n')) {
+                      summaries = processedText.split('\n\n')
+                        .filter(summary => summary.trim().length > 0)
+                        .slice(0, 3); // Limit to 3 summaries
+                      
+                      console.log(`Found ${summaries.length} summaries with newline split`);
+                    }
+                    
+                    // If we couldn't find any properly formatted summaries, just display the whole text
                     if (summaries.length === 0) {
                       return (
                         <div
                           className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
                           onClick={() => {
-                            navigator.clipboard.writeText(generatedBios);
+                            navigator.clipboard.writeText(processedText);
                             toast("Summary copied to clipboard", {
                               icon: "✂️",
                             });
                           }}
                         >
-                          <p>{generatedBios}</p>
+                          <p>{processedText}</p>
                         </div>
                       );
                     }
