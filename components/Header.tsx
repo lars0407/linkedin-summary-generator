@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Github from "./GitHub";
 
 export default function Header() {
   return (
@@ -15,13 +14,12 @@ export default function Header() {
         </h1>
       </Link>
       <a
-        className="flex max-w-fit items-center justify-center space-x-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 shadow-md transition-colors hover:bg-gray-100"
-        href="https://github.com/Nutlope/twitterbio"
+        className="flex max-w-fit items-center justify-center rounded-2xl bg-[#35B957] px-5 py-2 text-base font-medium text-white shadow-md transition-colors hover:bg-[#2ea14c]"
+        href="https://jobjaeger.de"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <Github />
-        <p>Star on GitHub</p>
+        Finde deinen Traumjob
       </a>
     </header>
   );
