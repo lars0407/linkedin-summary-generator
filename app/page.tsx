@@ -8,7 +8,6 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import LoadingDots from "../components/LoadingDots";
 import Toggle from "../components/Toggle";
-import { ChatCompletionStream } from "openai/lib/ChatCompletionStream";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -54,8 +53,16 @@ export default function Home() {
       throw new Error(response.statusText);
     }
 
-    const runner = ChatCompletionStream.fromReadableStream(response.body!);
-    runner.on("content", (delta) => setGeneratedBios((prev) => prev + delta));
+    const reader = response.body!.getReader();
+    const decoder = new TextDecoder();
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      const chunk = decoder.decode(value);
+      setGeneratedBios((prev) => prev + chunk);
+    }
 
     scrollToBios();
     setLoading(false);
