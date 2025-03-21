@@ -1,10 +1,6 @@
-import { Menu, Transition } from "@headlessui/react";
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from "@heroicons/react/20/solid";
 import { Fragment } from "react";
+import { Listbox, Transition } from "@headlessui/react";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -19,59 +15,77 @@ interface DropDownProps {
 
 let vibes: VibeType[] = ["Professional", "Casual", "Funny"];
 
+let vibeLabels = {
+  Professional: "Professionell",
+  Casual: "Locker",
+  Funny: "Humorvoll"
+};
+
 export default function DropDown({ vibe, setVibe }: DropDownProps) {
   return (
-    <Menu as="div" className="relative block text-left w-full">
-      <div>
-        <Menu.Button className="inline-flex w-full justify-between items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black">
-          {vibe}
-          <ChevronUpIcon
-            className="-mr-1 ml-2 h-5 w-5 ui-open:hidden"
-            aria-hidden="true"
-          />
-          <ChevronDownIcon
-            className="-mr-1 ml-2 h-5 w-5 hidden ui-open:block"
-            aria-hidden="true"
-          />
-        </Menu.Button>
-      </div>
+    <Listbox value={vibe} onChange={setVibe}>
+      {({ open }) => (
+        <>
+          <div className="relative mt-2">
+            <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-3 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-black sm:text-sm sm:leading-6">
+              <span className="block truncate">{vibeLabels[vibe]}</span>
+              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                <ChevronUpDownIcon
+                  className="h-5 w-5 text-gray-400"
+                  aria-hidden="true"
+                />
+              </span>
+            </Listbox.Button>
 
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
-      >
-        <Menu.Items
-          className="absolute left-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-          key={vibe}
-        >
-          <div className="">
-            {vibes.map((vibeItem) => (
-              <Menu.Item key={vibeItem}>
-                {({ active }) => (
-                  <button
-                    onClick={() => setVibe(vibeItem)}
-                    className={classNames(
-                      active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      vibe === vibeItem ? "bg-gray-200" : "",
-                      "px-4 py-2 text-sm w-full text-left flex items-center space-x-2 justify-between"
-                    )}
+            <Transition
+              show={open}
+              as={Fragment}
+              leave="transition ease-in duration-100"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                {vibes.map((vibeOption) => (
+                  <Listbox.Option
+                    key={vibeOption}
+                    className={({ active }) =>
+                      classNames(
+                        active ? "bg-black text-white" : "text-gray-900",
+                        "relative cursor-default select-none py-2 pl-3 pr-9"
+                      )
+                    }
+                    value={vibeOption}
                   >
-                    <span>{vibeItem}</span>
-                    {vibe === vibeItem ? (
-                      <CheckIcon className="w-4 h-4 text-bold" />
-                    ) : null}
-                  </button>
-                )}
-              </Menu.Item>
-            ))}
+                    {({ selected, active }) => (
+                      <>
+                        <span
+                          className={classNames(
+                            selected ? "font-semibold" : "font-normal",
+                            "block truncate"
+                          )}
+                        >
+                          {vibeLabels[vibeOption]}
+                        </span>
+
+                        {selected ? (
+                          <span
+                            className={classNames(
+                              active ? "text-white" : "text-black",
+                              "absolute inset-y-0 right-0 flex items-center pr-4"
+                            )}
+                          >
+                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Transition>
           </div>
-        </Menu.Items>
-      </Transition>
-    </Menu>
+        </>
+      )}
+    </Listbox>
   );
 }

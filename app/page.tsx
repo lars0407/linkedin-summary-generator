@@ -28,7 +28,7 @@ export default function Home() {
     vibe === "Casual" ? "relaxed" : vibe === "Funny" ? "silly" : "Professional"
   } twitter biographies with no hashtags and clearly labeled "1.", "2.", and "3.". Only return these 3 twitter bios, nothing else. ${
     vibe === "Funny" ? "Make the biographies humerous" : ""
-  }Make sure each generated biography is less than 300 characters, has short sentences that are found in Twitter bios, and feel free to use this context as well: ${bio}${
+  }Answer in german.Make sure each generated biography is less than 300 characters, has short sentences that are found in Twitter bios, and feel free to use this context as well: ${bio}${
     bio.slice(-1) === "." ? "" : "."
   }`;
 
@@ -67,13 +67,13 @@ export default function Home() {
           setGeneratedBios((prev) => prev + text);
         }
       } catch (error) {
-        console.error("Error reading stream:", error);
+        console.error("Fehler beim Lesen des Streams:", error);
       } finally {
         reader.releaseLock();
       }
     } catch (error) {
-      console.error("Error generating bio:", error);
-      toast.error("Error generating bio. Please try again.");
+      console.error("Fehler bei der Generierung:", error);
+      toast.error("Fehler bei der Generierung. Bitte versuche es erneut.");
     } finally {
       setLoading(false);
       scrollToBios();
@@ -85,10 +85,10 @@ export default function Home() {
       <Header />
       <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 mt-12 sm:mt-20">
         <p className="border rounded-2xl py-1 px-4 text-slate-500 text-sm mb-5 hover:scale-105 transition duration-300 ease-in-out">
-          <b>126,657</b> bios generated so far
+          Beta Version
         </p>
         <h1 className="sm:text-6xl text-4xl max-w-[708px] font-bold text-slate-900">
-        Erstelle deine nächste Linkedin-Bio mit KI
+          Generiere deine LinkedIn Bio mit KI
         </h1>
         <div className="mt-7">
           <Toggle isGPT={isLlama} setIsGPT={setIsLlama} />
@@ -104,8 +104,8 @@ export default function Home() {
               className="mb-5 sm:mb-0"
             />
             <p className="text-left font-medium">
-              Drop in your job{" "}
-              <span className="text-slate-500">(or your favorite hobby)</span>.
+              Gib deinen Job ein{" "}
+              <span className="text-slate-500">(oder dein Lieblingshobby)</span>.
             </p>
           </div>
           <textarea
@@ -113,11 +113,11 @@ export default function Home() {
             onChange={(e) => setBio(e.target.value)}
             rows={4}
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black my-5"
-            placeholder={"e.g. Amazon CEO"}
+            placeholder={"z.B. Marketing Manager"}
           />
           <div className="flex mb-5 items-center space-x-3">
-            <Image src="/2-black.png" width={30} height={30} alt="1 icon" />
-            <p className="text-left font-medium">Select your vibe.</p>
+            <Image src="/2-black.png" width={30} height={30} alt="2 icon" />
+            <p className="text-left font-medium">Wähle deinen Stil.</p>
           </div>
           <div className="block">
             <DropDown vibe={vibe} setVibe={(newVibe) => setVibe(newVibe)} />
@@ -134,7 +134,7 @@ export default function Home() {
               className="bg-black rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-black/80 w-full"
               onClick={(e) => generateBio(e)}
             >
-              Generate your bio &rarr;
+              Generiere deine Beschreibung &rarr;
             </button>
           )}
         </div>
@@ -152,7 +152,7 @@ export default function Home() {
                   className="sm:text-4xl text-3xl font-bold text-slate-900 mx-auto"
                   ref={bioRef}
                 >
-                  Your generated bios
+                  Deine generierten Beschreibungen
                 </h2>
               </div>
               <div className="space-y-8 flex flex-col items-center justify-center max-w-xl mx-auto">
@@ -165,7 +165,7 @@ export default function Home() {
                         className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
                         onClick={() => {
                           navigator.clipboard.writeText(generatedBio);
-                          toast("Bio copied to clipboard", {
+                          toast("Beschreibung in die Zwischenablage kopiert", {
                             icon: "✂️",
                           });
                         }}

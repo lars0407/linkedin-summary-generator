@@ -10,11 +10,11 @@ export default function Header() {
           className="sm:w-9 sm:h-9 w-8 h-8"
         />
         <h1 className="sm:text-3xl text-2xl font-bold ml-2 tracking-tight">
-          LinkedIn Bio Generator
+          LinkedIn BIo Generator
         </h1>
       </Link>
       <a
-        className="flex max-w-fit items-center justify-center rounded-2xl bg-[#35B957] px-5 py-2 text-base font-medium text-white shadow-md transition-colors hover:bg-[#2ea14c]"
+        className="flex max-w-fit items-center justify-center rounded-2xl bg-[#0F973D] px-5 py-2 text-base font-medium text-white shadow-md transition-colors hover:bg-[#2ea14c]"
         href="https://jobjaeger.de"
         target="_blank"
         rel="noopener noreferrer"
