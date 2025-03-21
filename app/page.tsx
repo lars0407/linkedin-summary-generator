@@ -36,36 +36,48 @@ export default function Home() {
     e.preventDefault();
     setGeneratedBios("");
     setLoading(true);
-    const response = await fetch("/api/together", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt,
-        model: isLlama
-          ? "gpt-4"
-          : "gpt-3.5-turbo",
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-
-    const reader = response.body!.getReader();
-    const decoder = new TextDecoder();
     
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      
-      const chunk = decoder.decode(value);
-      setGeneratedBios((prev) => prev + chunk);
-    }
+    try {
+      const response = await fetch("/api/together", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+          model: isLlama
+            ? "gpt-4"
+            : "gpt-3.5-turbo",
+        }),
+      });
 
-    scrollToBios();
-    setLoading(false);
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const text = decoder.decode(value);
+          setGeneratedBios((prev) => prev + text);
+        }
+      } catch (error) {
+        console.error("Error reading stream:", error);
+      } finally {
+        reader.releaseLock();
+      }
+    } catch (error) {
+      console.error("Error generating bio:", error);
+      toast.error("Error generating bio. Please try again.");
+    } finally {
+      setLoading(false);
+      scrollToBios();
+    }
   };
 
   return (
