@@ -15,18 +15,9 @@ export async function POST(req: Request) {
     },
     body: JSON.stringify({
       model,
-      messages: [
-        { 
-          role: "system", 
-          content: "You are a helpful assistant that generates LinkedIn summaries. Always format your response with numbers followed by a period (1., 2., 3.) at the beginning of each summary."
-        },
-        { 
-          role: "user", 
-          content: prompt 
-        }
-      ],
+      messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
-      max_tokens: 500,
+      max_tokens: 200,
       stream: true,
     }),
   });
