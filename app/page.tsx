@@ -8,14 +8,13 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import LoadingDots from "../components/LoadingDots";
 import Toggle from "../components/Toggle";
-import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
   const [bio, setBio] = useState("");
   const [vibe, setVibe] = useState<VibeType>("Professional");
-  const [generatedBios, setGeneratedBios] = useState<String>("");
-  const [isLlama, setIsLlama] = useState(false);
+  const [generatedBios, setGeneratedBios] = useState<string>("");
+  const [isGPT4, setIsGPT4] = useState(false);
 
   const bioRef = useRef<null | HTMLDivElement>(null);
 
@@ -27,38 +26,53 @@ export default function Home() {
 
   const prompt = `Generate 3 ${
     vibe === "Casual" ? "relaxed" : vibe === "Funny" ? "silly" : "Professional"
-  } twitter biographies with no hashtags and clearly labeled "1.", "2.", and "3.". Only return these 3 twitter bios, nothing else. ${
-    vibe === "Funny" ? "Make the biographies humerous" : ""
-  }Make sure each generated biography is less than 300 characters, has short sentences that are found in Twitter bios, and feel free to use this context as well: ${bio}${
-    bio.slice(-1) === "." ? "" : "."
-  }`;
+  } LinkedIn summaries. Each summary should be less than 300 characters, professional for LinkedIn${
+    vibe === "Funny" ? ", with a touch of humor" : ""
+  }. Use this context: ${bio}${bio.slice(-1) === "." ? "" : "."} 
+DO NOT number the summaries or add any labels - just write the 3 summaries separated by the delimiter THREE_SUMMARIES.`;
 
   const generateBio = async (e: any) => {
     e.preventDefault();
     setGeneratedBios("");
     setLoading(true);
-    const response = await fetch("/api/together", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt,
-        model: isLlama
-          ? "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"
-          : "mistralai/Mixtral-8x7B-Instruct-v0.1",
-      }),
-    });
+    
+    try {
+      const response = await fetch("/api/openai", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+          model: isGPT4 ? "gpt-4-turbo" : "gpt-3.5-turbo",
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error(response.statusText);
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+
+      // Process the streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const text = decoder.decode(value);
+          setGeneratedBios((prev) => prev + text);
+        }
+      }
+
+      scrollToBios();
+    } catch (error) {
+      console.error("Error generating bio:", error);
+      toast.error("Failed to generate bio. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    const runner = ChatCompletionStream.fromReadableStream(response.body!);
-    runner.on("content", (delta) => setGeneratedBios((prev) => prev + delta));
-
-    scrollToBios();
-    setLoading(false);
   };
 
   return (
@@ -66,13 +80,13 @@ export default function Home() {
       <Header />
       <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 mt-12 sm:mt-20">
         <p className="border rounded-2xl py-1 px-4 text-slate-500 text-sm mb-5 hover:scale-105 transition duration-300 ease-in-out">
-          <b>126,657</b> bios generated so far
+          <b>126,657</b> summaries generated so far
         </p>
         <h1 className="sm:text-6xl text-4xl max-w-[708px] font-bold text-slate-900">
-          Generate your next Twitter bio using AI
+          Generate your next LinkedIn summary using AI
         </h1>
         <div className="mt-7">
-          <Toggle isGPT={isLlama} setIsGPT={setIsLlama} />
+          <Toggle isGPT={isGPT4} setIsGPT={setIsGPT4} />
         </div>
 
         <div className="max-w-xl w-full">
@@ -94,7 +108,7 @@ export default function Home() {
             onChange={(e) => setBio(e.target.value)}
             rows={4}
             className="w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black my-5"
-            placeholder={"e.g. Amazon CEO"}
+            placeholder={"e.g. Software Engineer at Google"}
           />
           <div className="flex mb-5 items-center space-x-3">
             <Image src="/2-black.png" width={30} height={30} alt="1 icon" />
@@ -115,7 +129,7 @@ export default function Home() {
               className="bg-black rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-black/80 w-full"
               onClick={(e) => generateBio(e)}
             >
-              Generate your bio &rarr;
+              Generate your summary &rarr;
             </button>
           )}
         </div>
@@ -126,38 +140,83 @@ export default function Home() {
         />
         <hr className="h-px bg-gray-700 border-1 dark:bg-gray-700" />
         <div className="space-y-10 my-10">
-          {generatedBios && (
+          {generatedBios && generatedBios.length > 0 ? (
             <>
               <div>
                 <h2
                   className="sm:text-4xl text-3xl font-bold text-slate-900 mx-auto"
                   ref={bioRef}
                 >
-                  Your generated bios
+                  Your generated summaries
                 </h2>
               </div>
               <div className="space-y-8 flex flex-col items-center justify-center max-w-xl mx-auto">
-                {generatedBios
-                  .substring(generatedBios.indexOf("1") + 3)
-                  .split(/2\.|3\./)
-                  .map((generatedBio) => {
+                {(() => {
+                  try {
+                    // Using the new THREE_SUMMARIES delimiter format
+                    console.log("Raw text received:", generatedBios);
+                    
+                    // Split the response by the delimiter
+                    const summaries = generatedBios.split("THREE_SUMMARIES")
+                      .map(summary => summary.trim())
+                      .filter(summary => summary.length > 0);
+                    
+                    console.log("Extracted summaries:", summaries);
+                    
+                    // If we couldn't find any properly formatted summaries, just display the whole text
+                    if (summaries.length === 0) {
+                      return (
+                        <div
+                          className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
+                          onClick={() => {
+                            navigator.clipboard.writeText(generatedBios);
+                            toast("Summary copied to clipboard", {
+                              icon: "✂️",
+                            });
+                          }}
+                        >
+                          <p>{generatedBios}</p>
+                        </div>
+                      );
+                    }
+                    
+                    // Otherwise, display each summary separately (up to 3)
+                    return summaries.slice(0, 3).map((summary, i) => (
+                      <div
+                        className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
+                        onClick={() => {
+                          navigator.clipboard.writeText(summary);
+                          toast("Summary copied to clipboard", {
+                            icon: "✂️",
+                          });
+                        }}
+                        key={i}
+                      >
+                        <p>{summary}</p>
+                      </div>
+                    ));
+                  } catch (error) {
+                    console.error("Error parsing summaries:", error);
+                    // Fallback if there's an error in parsing
                     return (
                       <div
                         className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
                         onClick={() => {
-                          navigator.clipboard.writeText(generatedBio);
-                          toast("Bio copied to clipboard", {
+                          navigator.clipboard.writeText(generatedBios);
+                          toast("Summary copied to clipboard", {
                             icon: "✂️",
                           });
                         }}
-                        key={generatedBio}
                       >
-                        <p>{generatedBio}</p>
+                        <p>{generatedBios}</p>
                       </div>
                     );
-                  })}
+                  }
+                })()}
               </div>
             </>
+          ) : (
+            <div className="text-gray-500">No summaries generated yet</div>
           )}
         </div>
       </main>
