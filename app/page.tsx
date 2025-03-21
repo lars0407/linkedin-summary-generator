@@ -8,7 +8,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import LoadingDots from "../components/LoadingDots";
 import Toggle from "../components/Toggle";
-import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream";
+import { ChatCompletionStream } from "openai/lib/ChatCompletionStream";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -45,8 +45,8 @@ export default function Home() {
       body: JSON.stringify({
         prompt,
         model: isLlama
-          ? "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"
-          : "mistralai/Mixtral-8x7B-Instruct-v0.1",
+          ? "gpt-4"
+          : "gpt-3.5-turbo",
       }),
     });
 
