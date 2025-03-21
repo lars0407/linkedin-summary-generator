@@ -10,7 +10,7 @@ export default function Header() {
           className="sm:w-9 sm:h-9 w-8 h-8"
         />
         <h1 className="sm:text-3xl text-2xl font-bold ml-2 tracking-tight">
-          twitterbio.io
+          linkedinbio.io
         </h1>
       </Link>
       <a
