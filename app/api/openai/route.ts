@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       model,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
-      max_tokens: 200,
+      max_tokens: 500,
       stream: true,
     }),
   });
