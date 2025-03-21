@@ -13,7 +13,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [bio, setBio] = useState("");
   const [vibe, setVibe] = useState<VibeType>("Professional");
-  const [generatedBios, setGeneratedBios] = useState<String>("");
+  const [generatedBios, setGeneratedBios] = useState<string>("");
   const [isGPT4, setIsGPT4] = useState(false);
 
   const bioRef = useRef<null | HTMLDivElement>(null);
@@ -152,25 +152,57 @@ export default function Home() {
                 </h2>
               </div>
               <div className="space-y-8 flex flex-col items-center justify-center max-w-xl mx-auto">
-                {generatedBios
-                  .substring(generatedBios.indexOf("1") + 3)
-                  .split(/2\.|3\./)
-                  .map((generatedBio, i) => {
-                    return (
+                {generatedBios && generatedBios.length > 0 ? (
+                  (() => {
+                    // First, try to find the labeled summaries
+                    let summaries = [];
+                    const regex = /(\d+\.)(.*?)(?=\d+\.|$)/g;
+                    let match;
+                    
+                    while ((match = regex.exec(generatedBios)) !== null) {
+                      // Get the summary text and trim whitespace
+                      const summaryText = match[2].trim();
+                      if (summaryText) {
+                        summaries.push(summaryText);
+                      }
+                    }
+                    
+                    // If we couldn't find properly labeled summaries, just display the whole text
+                    if (summaries.length === 0) {
+                      return (
+                        <div
+                          className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
+                          onClick={() => {
+                            navigator.clipboard.writeText(generatedBios);
+                            toast("Summary copied to clipboard", {
+                              icon: "✂️",
+                            });
+                          }}
+                        >
+                          <p>{generatedBios}</p>
+                        </div>
+                      );
+                    }
+                    
+                    // Otherwise, display each summary separately
+                    return summaries.map((summary, i) => (
                       <div
                         className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
                         onClick={() => {
-                          navigator.clipboard.writeText(generatedBio);
+                          navigator.clipboard.writeText(summary);
                           toast("Summary copied to clipboard", {
                             icon: "✂️",
                           });
                         }}
                         key={i}
                       >
-                        <p>{generatedBio}</p>
+                        <p>{summary}</p>
                       </div>
-                    );
-                  })}
+                    ));
+                  })()
+                ) : (
+                  <div className="text-gray-500">No summaries generated yet</div>
+                )}
               </div>
             </>
           )}
