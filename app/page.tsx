@@ -88,7 +88,7 @@ export default function Home() {
           <b>126,657</b> bios generated so far
         </p>
         <h1 className="sm:text-6xl text-4xl max-w-[708px] font-bold text-slate-900">
-          Generate your next Twitter bio using AI
+        Erstelle deine nächste Linkedin-Bio mit KI
         </h1>
         <div className="mt-7">
           <Toggle isGPT={isLlama} setIsGPT={setIsLlama} />
