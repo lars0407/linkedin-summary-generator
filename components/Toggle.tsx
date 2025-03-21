@@ -13,16 +13,16 @@ export default function Toggle({ isGPT, setIsGPT }: any) {
         className="mr-3 text-sm flex justify-center gap-2 items-center"
       >
         <Image
-          src="/openai-logo.png"
+          src="/mistral-logo.jpeg"
           width={25}
           height={25}
-          alt="OpenAI logo"
+          alt="1 icon"
           className={`${isGPT && "opacity-50"}`}
         />
         <span
           className={`font-medium ${isGPT ? "text-gray-400" : "text-gray-900"}`}
         >
-          GPT-3.5 Turbo
+          Mixtral 8x7B
         </span>{" "}
       </Switch.Label>
       <Switch
@@ -50,13 +50,13 @@ export default function Toggle({ isGPT, setIsGPT }: any) {
             !isGPT ? "text-gray-400" : "text-gray-900"
           }`}
         >
-          GPT-4 Turbo
+          Llama 3.1 8B
         </span>{" "}
         <Image
-          src="/openai-logo.png"
-          width={25}
-          height={25}
-          alt="OpenAI logo"
+          src="/llama-logo.webp"
+          width={40}
+          height={40}
+          alt="Meta logo"
           className={`${!isGPT && "opacity-50"}`}
         />
       </Switch.Label>
