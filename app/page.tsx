@@ -7,6 +7,7 @@ import DropDown, { VibeType } from "../components/DropDown";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import LoadingDots from "../components/LoadingDots";
+import FAQ from "../components/FAQ";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -176,6 +177,7 @@ export default function Home() {
               </div>
             </>
           )}
+          <FAQ />
         </div>
       </main>
       <Footer />
