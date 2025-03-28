@@ -7,14 +7,12 @@ import DropDown, { VibeType } from "../components/DropDown";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import LoadingDots from "../components/LoadingDots";
-import Toggle from "../components/Toggle";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
   const [bio, setBio] = useState("");
   const [vibe, setVibe] = useState<VibeType>("Professional");
   const [generatedBios, setGeneratedBios] = useState<String>("");
-  const [isLlama, setIsLlama] = useState(false);
 
   const bioRef = useRef<null | HTMLDivElement>(null);
 
@@ -45,9 +43,7 @@ export default function Home() {
         },
         body: JSON.stringify({
           prompt,
-          model: isLlama
-            ? "gpt-4"
-            : "gpt-3.5-turbo",
+          model: "gpt-3.5-turbo",
         }),
       });
 
@@ -90,10 +86,6 @@ export default function Home() {
         <h1 className="sm:text-6xl text-4xl max-w-[708px] font-bold text-slate-900">
           Generiere deine LinkedIn Bio mit KI
         </h1>
-        <div className="mt-7">
-          <Toggle isGPT={isLlama} setIsGPT={setIsLlama} />
-        </div>
-
         <div className="max-w-xl w-full">
           <div className="flex mt-10 items-center space-x-3">
             <Image
@@ -101,7 +93,7 @@ export default function Home() {
               width={30}
               height={30}
               alt="1 icon"
-              className="mb-5 sm:mb-0"
+              className="mb-5 sm:mb-0 [filter:invert(48%)_sepia(79%)_saturate(2476%)_hue-rotate(86deg)_brightness(90%)_contrast(80%)]"
             />
             <p className="text-left font-medium">
               Gib deinen Job ein{" "}
@@ -116,7 +108,13 @@ export default function Home() {
             placeholder={"z.B. Marketing Manager"}
           />
           <div className="flex mb-5 items-center space-x-3">
-            <Image src="/2-black.png" width={30} height={30} alt="2 icon" />
+            <Image
+              src="/2-black.png"
+              width={30}
+              height={30}
+              alt="2 icon"
+              className="[filter:invert(48%)_sepia(79%)_saturate(2476%)_hue-rotate(86deg)_brightness(90%)_contrast(80%)]"
+            />
             <p className="text-left font-medium">Wähle deinen Stil.</p>
           </div>
           <div className="block">
@@ -124,14 +122,14 @@ export default function Home() {
           </div>
           {loading ? (
             <button
-              className="bg-black rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-black/80 w-full"
+              className="bg-[#0F973D] rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-[#2ea14c] w-full"
               disabled
             >
               <LoadingDots color="white" style="large" />
             </button>
           ) : (
             <button
-              className="bg-black rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-black/80 w-full"
+              className="bg-[#0F973D] rounded-xl text-white font-medium px-4 py-2 sm:mt-10 mt-8 hover:bg-[#2ea14c] w-full"
               onClick={(e) => generateBio(e)}
             >
               Generiere deine Beschreibung &rarr;

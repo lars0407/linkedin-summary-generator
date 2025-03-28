@@ -50,7 +50,7 @@ export default function DropDown({ vibe, setVibe }: DropDownProps) {
                     key={vibeOption}
                     className={({ active }) =>
                       classNames(
-                        active ? "bg-black text-white" : "text-gray-900",
+                        active ? "bg-[#0F973D] text-white" : "text-gray-900",
                         "relative cursor-default select-none py-2 pl-3 pr-9"
                       )
                     }
