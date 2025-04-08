@@ -14,6 +14,7 @@ const azureOpenai = new AzureOpenAI({
   defaultHeaders: {
     "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
     "Helicone-OpenAI-API-Base": `https://${process.env.AZURE_OPENAI_DOMAIN}.openai.azure.com`,
+    "Helicone-Property-Prompt": "Linkedin Bio Generator",
     "api-key": process.env.AZURE_OPENAI_API_KEY,
   },
 });
