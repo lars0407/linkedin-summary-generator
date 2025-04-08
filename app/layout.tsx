@@ -50,8 +50,7 @@ export default function RootLayout({
   return (
     <html lang="de" className="h-full">
       <head>
-        <PlausibleProvider domain="twitterbio.io" />
-      </head>
+     </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
