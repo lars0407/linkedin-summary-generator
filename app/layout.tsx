@@ -12,11 +12,11 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
 });
 
-let title = "Tweetbio – AI Twitter Bio Generator";
-let description = "Generate your next Twitter bio in seconds";
-let url = "https://www.twitterbio.io/";
-let ogimage = "https://www.twitterbio.io/og-image.png";
-let sitename = "twitterbio.io";
+let title = "Jobjäger – KI Linkedin Bio Generator";
+let description = "Erstelle deine nächste Linkedin Bio in Sekunden mit KI";
+let url = "https://www.jobjaeger.de/";
+let ogimage = "https://www.jobjaeger.de/og-image.png";
+let sitename = "jobjaeger.de";
 
 export const metadata: Metadata = {
   metadataBase: new URL(url),
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     description,
     url: url,
     siteName: sitename,
-    locale: "en_US",
+    locale: "de_DE",
     type: "website",
   },
   twitter: {
@@ -48,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="de" className="h-full">
       <head>
         <PlausibleProvider domain="twitterbio.io" />
       </head>
