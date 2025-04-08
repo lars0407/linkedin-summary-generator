@@ -1,15 +1,25 @@
-import OpenAI from 'openai';
+import { AzureOpenAI } from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const azureOpenai = new AzureOpenAI({
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
+  apiVersion: process.env.AZURE_OPENAI_API_VERSION || "2024-02-15-preview",
+  baseURL: `https://oai.helicone.ai/openai/deployments/${process.env.AZURE_OPENAI_DEPLOYMENT_NAME}`,
+  defaultHeaders: {
+    "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
+    "Helicone-OpenAI-API-Base": `https://${process.env.AZURE_OPENAI_DOMAIN}.openai.azure.com`,
+    "api-key": process.env.AZURE_OPENAI_API_KEY,
+  },
 });
 
-if (!process.env.OPENAI_API_KEY) throw new Error("Missing OpenAI API key env var");
+if (!process.env.AZURE_OPENAI_API_KEY) throw new Error("Missing Azure OpenAI API key env var");
+if (!process.env.HELICONE_API_KEY) throw new Error("Missing Helicone API key env var");
+if (!process.env.AZURE_OPENAI_DEPLOYMENT_NAME) throw new Error("Missing Azure OpenAI deployment name env var");
+if (!process.env.AZURE_OPENAI_DOMAIN) throw new Error("Missing Azure OpenAI domain env var");
 
 export async function POST(req: Request) {
   const { prompt, model } = await req.json();
 
-  const response = await openai.chat.completions.create({
+  const response = await azureOpenai.chat.completions.create({
     model,
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
